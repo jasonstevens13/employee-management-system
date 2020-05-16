@@ -140,3 +140,11 @@ function allDeptsSearch() {
     });
     start();
 };
+
+function quit() {
+
+    connection.end(() => {
+        console.table("CONNECTION CLOSED - HAVE A NICE DAY!");
+    });
+
+};
