@@ -1,4 +1,4 @@
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'MaziePenny1207';
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';
 	
 DROP DATABASE IF EXISTS employee_db;
 CREATE DATABASE employee_db;
