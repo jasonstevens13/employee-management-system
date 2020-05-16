@@ -125,11 +125,18 @@ function allEmpsSearch() {
     start();
 };
 
-
 function allRolesSearch() {
     const query = "SELECT role.id, role.title, role.salary FROM role LEFT JOIN department ON role.department_id = department.id";
     connection.query(query, (err, res) => {
         console.table("Role List:", res);
+    });
+    start();
+};
+
+function allDeptsSearch() {
+    const query = "SELECT department.id, department.name FROM department";
+    connection.query(query, (err, res) => {
+        console.table("Department List:", res);
     });
     start();
 };
