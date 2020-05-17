@@ -211,6 +211,8 @@ function addEmp() {
 };
 
 
+
+
 function updateEmpRole() {
     // query the database for all employees to choose which employee is receiving an update to their role
 
@@ -232,7 +234,6 @@ function updateEmpRole() {
                     name: "empID",
                     type: "list",
                     choices: function () {
-                        // let choiceArray = [];
 
                         console.log("Employee List: ")
                         console.table(results);
@@ -251,12 +252,6 @@ function updateEmpRole() {
 
                 chosenEmpID = answer;
 
-                // for (var i = 0; i < results.length; i++) {
-                //     if (results[i].id === answer.choice) {
-                //         chosenEmpID = results[i];
-                //     }
-                // };
-
                 connection.query(query2, (err, results2) => {
                     if (err) throw err;
 
@@ -267,7 +262,6 @@ function updateEmpRole() {
                                 name: "newRoleID",
                                 type: "rawlist",
                                 choices: function () {
-                                    // let choiceArray2 = [];
 
                                     console.log("Role List: ")
                                     console.table(results2);
@@ -283,13 +277,6 @@ function updateEmpRole() {
                         .then(function (answer2) {
 
                             chosenRoleID = answer2;
-
-
-                            // for (var i = 0; i < results.length; i++) {
-                            //     if (results[i].id === answer.choice) {
-                            //         chosenRoleID = results2[i];
-                            //     }
-                            // };
 
                             connection.query(
                                 query3,
@@ -307,14 +294,9 @@ function updateEmpRole() {
                                     start();
                                 }
                             );
-
-
                         });
-
                 });
-
             });
-
     });
 };
 
