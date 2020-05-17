@@ -289,6 +289,34 @@ function allDeptsSearch() {
 };
 
 
+function addDept() {
+
+
+    inquirer
+        .prompt([
+            {
+                name: "deptName",
+                type: "input",
+                message: "What is the name of the new department that you're adding?"
+            }
+        ])
+        .then(function (answer) {
+
+            connection.query(
+                "INSERT INTO department SET ?",
+                {
+                    name: answer.deptName
+                },
+                function (err) {
+                    if (err) throw err;
+                    console.log("The new department was successfully added to the department database!");
+
+                    start();
+                }
+            );
+        });
+};
+
 
 // QUIT FUNCTION
 function quit() {
