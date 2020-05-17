@@ -180,7 +180,13 @@ function addEmp() {
                 {
                     name: "managerID",
                     type: "input",
-                    message: "What is the ID of the new employee's manager? (Not sure yet? Enter 0 here and update it later."
+                    message: "What is the ID of the new employee's manager? (Not sure yet? Enter 0 here and update it later.)",
+                    validate: function (value) {
+                        if (isNaN(value) === false) {
+                            return true;
+                        }
+                        return false;
+                    }
                 }
             ])
             .then(function (answer) {
@@ -231,7 +237,13 @@ function addRole() {
                 {
                     name: "salary",
                     type: "input",
-                    message: "What is the salary for the new role?"
+                    message: "What is the salary for the new role?",
+                    validate: function (value) {
+                        if (isNaN(value) === false) {
+                            return true;
+                        }
+                        return false;
+                    }
                 },
                 {
                     name: "deptID",
