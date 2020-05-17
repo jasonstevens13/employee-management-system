@@ -146,66 +146,62 @@ function empsByMgrSearch() {
 
 function addEmp() {
 
-    inquirer
-        .prompt([
-            {
-                name: "firstName",
-                type: "input",
-                message: "What is the new employee's first name?"
-            },
-            {
-                name: "lastName",
-                type: "input",
-                message: "What is the new employee's last name?"
-            },
-            {
-                name: "roleID",
-                type: "rawlist",
-                message: "What role will the employee be filling? (NOTE: If the role does not exist yet, choose 15 as a placeholder and then update it later.)",
-                choices: [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6,
-                    7,
-                    8,
-                    9,
-                    10,
-                    11,
-                    12,
-                    13,
-                    14,
-                    15
-                ]
-            },
-            {
-                name: "managerID",
-                type: "input",
-                message: "What is the ID of the new employee's manager? (Not sure yet? Enter 0 here and update it later."
-            }
+    const query = "SELECT role.id, role.title, role.salary FROM role LEFT JOIN department ON role.department_id = department.id";
+    connection.query(query, (err, results) => {
+        if (err) throw err;
 
-        ])
-
-        .then(function (answer) {
-
-            connection.query(
-                "INSERT INTO employee SET ?",
+        inquirer
+            .prompt([
                 {
-                    first_name: answer.firstName,
-                    last_name: answer.lastName,
-                    role_ID: answer.roleID || 15,
-                    manager: answer.managerID || 0
+                    name: "firstName",
+                    type: "input",
+                    message: "What is the new employee's first name?"
                 },
-                function (err) {
-                    if (err) throw err;
-                    console.log("The new employee was successfully added to the employee database!");
+                {
+                    name: "lastName",
+                    type: "input",
+                    message: "What is the new employee's last name?"
+                },
+                {
+                    name: "roleID",
+                    type: "rawlist",
+                    choices: function () {
+                        var choiceArray = [];
 
-                    start();
+                        console.log("Here are the role IDs. Make your choice below.")
+                        console.table(results);
+                        for (var i = 0; i < results.length; i++) {
+                            choiceArray.push(results[i].id);
+                        }
+                        return choiceArray;
+                    },
+                    message: "What role will the employee be filling? (NOTE: If the role does not exist yet, choose 15 as a placeholder and then update it later.)"
+                },
+                {
+                    name: "managerID",
+                    type: "input",
+                    message: "What is the ID of the new employee's manager? (Not sure yet? Enter 0 here and update it later."
                 }
-            );
-        });
+            ])
+            .then(function (answer) {
+
+                connection.query(
+                    "INSERT INTO employee SET ?",
+                    {
+                        first_name: answer.firstName,
+                        last_name: answer.lastName,
+                        role_ID: answer.roleID || 15,
+                        manager: answer.managerID || 0
+                    },
+                    function (err) {
+                        if (err) throw err;
+                        console.log("The new employee was successfully added to the employee database!");
+
+                        start();
+                    }
+                );
+            });
+    });
 };
 
 
@@ -240,16 +236,6 @@ function addRole() {
                 {
                     name: "deptID",
                     type: "rawlist",
-
-                    // choices: [
-                    //     1,
-                    //     2,
-                    //     3,
-                    //     4,
-                    //     5,
-                    //     6
-                    // ],
-
                     choices: function () {
                         var choiceArray = [];
 
