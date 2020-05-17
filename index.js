@@ -221,51 +221,74 @@ function allRolesSearch() {
 
 function addRole() {
 
-    inquirer
-        .prompt([
-            {
-                name: "title",
-                type: "input",
-                message: "What is the title for the new role?"
-            },
-            {
-                name: "salary",
-                type: "input",
-                message: "What is the salary for the new role?"
-            },
-            {
-                name: "deptID",
-                type: "rawlist",
-                message: "What department is this role going? (NOTE: select 6 if you're unsure, and correct it later.",
-                choices: [
-                    1,
-                    2,
-                    3,
-                    4,
-                    5,
-                    6
-                ]
-            }
-        ])
+    const query = "SELECT department.id, department.name FROM department";
+    connection.query(query, (err, results) => {
+        if (err) throw err;
 
-        .then(function (answer) {
-
-            connection.query(
-                "INSERT INTO role SET ?",
+        inquirer
+            .prompt([
                 {
-                    title: answer.title,
-                    salary: answer.salary,
-                    department_id: answer.deptID
+                    name: "title",
+                    type: "input",
+                    message: "What is the title for the new role?"
                 },
-                function (err) {
-                    if (err) throw err;
-                    console.log("The new role was successfully added to the roles database!");
+                {
+                    name: "salary",
+                    type: "input",
+                    message: "What is the salary for the new role?"
+                },
+                {
+                    name: "deptID",
+                    type: "rawlist",
 
-                    start();
+                    // choices: [
+                    //     1,
+                    //     2,
+                    //     3,
+                    //     4,
+                    //     5,
+                    //     6
+                    // ],
+
+                    choices: function () {
+                        var choiceArray = [];
+
+                        console.log("Here are the dept IDs. Make your choice below.")
+                        console.table(results);
+                        for (var i = 0; i < results.length; i++) {
+                            choiceArray.push(results[i].id);
+                        }
+                        return choiceArray;
+                    },
+
+                    message: "What department is this role going? (NOTE: select 6 if you're unsure, and correct it later."
                 }
-            );
-        });
+            ])
+            .then(function (answer) {
+
+                connection.query(
+                    "INSERT INTO role SET ?",
+                    {
+                        title: answer.title,
+                        salary: answer.salary,
+                        department_id: answer.deptID
+                    },
+                    function (err) {
+                        if (err) throw err;
+                        console.log("The new role was successfully added to the roles database!");
+
+                        start();
+                    }
+                );
+            });
+
+
+    });
+
+
 };
+
+
 
 
 
