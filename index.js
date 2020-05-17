@@ -40,15 +40,15 @@ function start() {
                 "View all employees by department",
                 "View all employees by manager",
                 "Add employee",
-                "Remove employee",
+                // "Remove employee",
                 "Update employee role",
-                "Update employee manager",
+                // "Update employee manager",
                 "View all roles",
                 "Add a role",
-                "Remove a role",
+                // "Remove a role",
                 "View all departments",
                 "Add a department",
-                "Remove a department",
+                // "Remove a department",
                 "Quit"
 
             ]
@@ -71,17 +71,17 @@ function start() {
                     addEmp();
                     break;
 
-                case "Remove employee":
-                    removeEmp();
-                    break;
+                // case "Remove employee":
+                //     removeEmp();
+                //     break;
 
                 case "Update employee role":
                     updateEmpRole();
                     break;
 
-                case "Update employee manager":
-                    updateEmpMgr();
-                    break;
+                // case "Update employee manager":
+                //     updateEmpMgr();
+                //     break;
 
                 case "View all roles":
                     allRolesSearch();
@@ -103,9 +103,9 @@ function start() {
                     addDept();
                     break;
 
-                case "Remove a department":
-                    removeDept();
-                    break;
+                // case "Remove a department":
+                //     removeDept();
+                //     break;
 
                 case "Quit":
                     quit();
@@ -207,6 +207,114 @@ function addEmp() {
                     }
                 );
             });
+    });
+};
+
+
+function updateEmpRole() {
+    // query the database for all employees to choose which employee is receiving an update to their role
+
+    let query = "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS departmentName FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id";
+    let query2 = "SELECT role.id, role.title, role.salary FROM role";
+    let query3 = "UPDATE employee SET ? WHERE ?";
+    let chosenEmpID;
+    let chosenRoleID;
+    let choiceArray = [];
+    let choiceArray2 = [];
+
+    connection.query(query, (err, results) => {
+        if (err) throw err;
+        // once you have the emp list, prompt the user for which emp they'd like to update by showing list with IDs.
+        inquirer
+            .prompt([
+
+                {
+                    name: "empID",
+                    type: "list",
+                    choices: function () {
+                        // let choiceArray = [];
+
+                        console.log("Employee List: ")
+                        console.table(results);
+                        for (var i = 0; i < results.length; i++) {
+                            choiceArray.push(results[i].id);
+                        }
+                        return choiceArray;
+                    },
+
+                    message: "Select the employee ID for who is is getting an updated role."
+                }
+            ])
+            .then(function (answer) {
+
+                // get the information of the chosen item
+
+                chosenEmpID = answer;
+
+                // for (var i = 0; i < results.length; i++) {
+                //     if (results[i].id === answer.choice) {
+                //         chosenEmpID = results[i];
+                //     }
+                // };
+
+                connection.query(query2, (err, results2) => {
+                    if (err) throw err;
+
+                    inquirer
+                        .prompt([
+
+                            {
+                                name: "newRoleID",
+                                type: "rawlist",
+                                choices: function () {
+                                    // let choiceArray2 = [];
+
+                                    console.log("Role List: ")
+                                    console.table(results2);
+                                    for (var i = 0; i < results2.length; i++) {
+                                        choiceArray2.push(results2[i].id);
+                                    }
+                                    return choiceArray2;
+                                },
+
+                                message: "What is the new role ID you will be asigning this employee?"
+                            }
+                        ])
+                        .then(function (answer2) {
+
+                            chosenRoleID = answer2;
+
+
+                            // for (var i = 0; i < results.length; i++) {
+                            //     if (results[i].id === answer.choice) {
+                            //         chosenRoleID = results2[i];
+                            //     }
+                            // };
+
+                            connection.query(
+                                query3,
+                                [
+                                    {
+                                        role_id: chosenRoleID
+                                    },
+                                    {
+                                        id: chosenEmpID
+                                    }
+                                ],
+                                function (err, results3) {
+                                    if (error) throw err;
+                                    console.log("Employee role updted successfully!");
+                                    start();
+                                }
+                            );
+
+
+                        });
+
+                });
+
+            });
+
     });
 };
 
