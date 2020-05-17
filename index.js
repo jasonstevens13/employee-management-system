@@ -137,11 +137,75 @@ function empsByDeptSearch() {
 
 function empsByMgrSearch() {
 
-    const query = "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS departmentName FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id";
+    const query = "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, employee.manager, department.name AS departmentName FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id";
     connection.query(query, (err, res) => {
         console.table("Employee By Deptartment List:", res);
     });
     start();
+};
+
+function addEmp() {
+
+    inquirer
+        .prompt([
+            {
+                name: "firstName",
+                type: "input",
+                message: "What is the new employee's first name?"
+            },
+            {
+                name: "lastName",
+                type: "input",
+                message: "What is the new employee's last name?"
+            },
+            {
+                name: "roleID",
+                type: "rawlist",
+                message: "What role will the employee be filling? (NOTE: If the role does not exist yet, choose 15 as a placeholder and then update it later.)",
+                choices: [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10,
+                    11,
+                    12,
+                    13,
+                    14,
+                    15
+                ]
+            },
+            {
+                name: "managerID",
+                type: "input",
+                message: "What is the ID of the new employee's manager? (Not sure yet? Enter 0 here and update it later."
+            }
+
+        ])
+
+        .then(function (answer) {
+
+            connection.query(
+                "INSERT INTO employee SET ?",
+                {
+                    first_name: answer.firstName,
+                    last_name: answer.lastName,
+                    role_ID: answer.roleID || 15,
+                    manager: answer.managerID || 0
+                },
+                function (err) {
+                    if (err) throw err;
+                    console.log("The new employee was successfully added to the employee database!");
+
+                    start();
+                }
+            );
+        });
 };
 
 
