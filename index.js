@@ -219,6 +219,55 @@ function allRolesSearch() {
     start();
 };
 
+function addRole() {
+
+    inquirer
+        .prompt([
+            {
+                name: "title",
+                type: "input",
+                message: "What is the title for the new role?"
+            },
+            {
+                name: "salary",
+                type: "input",
+                message: "What is the salary for the new role?"
+            },
+            {
+                name: "deptID",
+                type: "rawlist",
+                message: "What department is this role going? (NOTE: select 6 if you're unsure, and correct it later.",
+                choices: [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6
+                ]
+            }
+        ])
+
+        .then(function (answer) {
+
+            connection.query(
+                "INSERT INTO role SET ?",
+                {
+                    title: answer.title,
+                    salary: answer.salary,
+                    department_id: answer.deptID
+                },
+                function (err) {
+                    if (err) throw err;
+                    console.log("The new role was successfully added to the roles database!");
+
+                    start();
+                }
+            );
+        });
+};
+
+
 
 
 // DEPARTMENTS TABLE FUNCTIONS
