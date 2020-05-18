@@ -4,11 +4,13 @@ var inquirer = require("inquirer");
 const cTable = require('console.table');
 require('dotenv').config();
 
+// The following 3 comments will be needed when I modularize functions for each of the 3 sql tables...these will refer the the currently unused files in ./lib folder.
 
-// const Deptartment = require("./lib/Department");
+// const deptartment = require("./lib/Department");
 // const employee = require("./lib/employee");
-// const Role = require("./lib/Role");
+// const role = require("./lib/Role");
 
+// mysq database info
 var connection = mysql.createConnection({
     host: "localhost",
 
@@ -23,12 +25,14 @@ var connection = mysql.createConnection({
     database: "employee_db"
 });
 
+// Making the connection to the sql databse here and then immediately starting the application with my start() function.
 connection.connect(function (err) {
     if (err) throw err;
     start();
 });
 
-
+// The start function below immediatly prompts the user to ask what action he/she would like to take. 
+// Notice that I plan to add some options/feature in the future, so for now they are commented out 9e.g. Remove Employee.
 function start() {
     inquirer
         .prompt({
@@ -53,6 +57,8 @@ function start() {
 
             ]
         })
+
+        // Depending on the selection action about, a respective function is called (e.g. allEmpsSearch)
         .then(function (answer) {
             switch (answer.action) {
                 case "View all employees":
@@ -115,8 +121,18 @@ function start() {
 };
 
 
+// Reminder - the sql database contains 3 tables of data - one for employees, one for roles, and one for departments.
+// I have separated groupings of functions as to what primary table they relate to; however in future these will
+// be modularized into those three unsued js files labeled for each each respective table in the /lib folder.
+
+
+
+
 
 // EMPLOYEE TABLE FUNCTIONS
+
+// This function sends a sql query to the database - obtains the employee table, and makes two joins to 
+// the role and department tables
 function allEmpsSearch() {
 
     const query = "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS departmentName FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id";
@@ -126,6 +142,8 @@ function allEmpsSearch() {
     start();
 };
 
+// empsByDeptSearch queries the dept table, but joins the role and employee tables and presents 
+// the results in oder of dept because that is the primary table
 function empsByDeptSearch() {
 
     const query = "SELECT department.id, department.name, employee.first_name, employee.last_name, role.title FROM department LEFT JOIN role ON department.id = role.department_id LEFT JOIN employee ON role.id = employee.role_id";
@@ -135,6 +153,7 @@ function empsByDeptSearch() {
     start();
 };
 
+// empsByMgrSearch queries employee table and joins role and department tables; column for manager is made available
 function empsByMgrSearch() {
 
     const query = "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, employee.manager, department.name AS departmentName FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id";
@@ -144,6 +163,11 @@ function empsByMgrSearch() {
     start();
 };
 
+// addEmp makes a sql query to the role table with dept table joined - the results are then used during the
+// comman line promts that follow. The user is asked for the first and last name strings, then asks what role
+// the new employee will fulfill - this is where the sql query results are presented as choices for the user.
+// The user is then prompted for a manager ID and the input is only accepted if it is a number (checked with NaN).
+// Once all prompts are fulfilled the final sql INSERT command is sent to the databse.
 function addEmp() {
 
     const query = "SELECT role.id, role.title, role.salary FROM role LEFT JOIN department ON role.department_id = department.id";
@@ -212,7 +236,10 @@ function addEmp() {
 
 
 
-
+// updateEmpRole makes 3 queries. The first presents the emp list to allow easy access to the employee IDs,
+// from which the user must select the emp to update. The same is done with the role table list.
+// Finally the third and final sql query takes the values gathered from the first two prompts and updates
+// the selected employee's role ID.
 function updateEmpRole() {
     // query the database for all employees to choose which employee is receiving an update to their role
 
@@ -302,7 +329,14 @@ function updateEmpRole() {
 
 
 
+
+
+
+
 // ROLES TABLE FUNCTIONS
+
+
+// allRolesSearch queries the role table while joining the department table
 function allRolesSearch() {
     const query = "SELECT role.id, role.title, role.salary FROM role LEFT JOIN department ON role.department_id = department.id";
     connection.query(query, (err, res) => {
@@ -311,6 +345,10 @@ function allRolesSearch() {
     start();
 };
 
+// addRole function queries the dept table to later use in a prompt
+// The user is then prompted for the new role's title and salary.
+// The user is provided a list of dept IDs from the original dept table query
+// Finally a sql INSERT command is executed with all of the given data - the new role is added to the table.
 function addRole() {
 
     const query = "SELECT department.id, department.name FROM department";
@@ -382,6 +420,9 @@ function addRole() {
 
 
 // DEPARTMENTS TABLE FUNCTIONS
+
+
+// allDeptsSearch simply queries the dept table with no joins
 function allDeptsSearch() {
     const query = "SELECT department.id, department.name FROM department";
     connection.query(query, (err, res) => {
@@ -390,9 +431,8 @@ function allDeptsSearch() {
     start();
 };
 
-
+// addDept prompts the user for the new dept name and then simply INSERTS it into the dept table
 function addDept() {
-
 
     inquirer
         .prompt([
@@ -421,6 +461,8 @@ function addDept() {
 
 
 // QUIT FUNCTION
+
+// The quit function simply end the connection to the sql database
 function quit() {
 
     connection.end(() => {
