@@ -1,7 +1,7 @@
 # Employee-Management-System
 A company database to store and organize your workforce! 
 
-![screenshot](https://github.com/jasonstevens13/employee-management-system/blob/master/assets/pic1.jpg)
+![screenshot](https://github.com/jasonstevens13/employee-management-system/blob/master/assets/pic.jpg)
 
 
 ## Table of Contents
