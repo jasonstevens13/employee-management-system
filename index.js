@@ -1,9 +1,9 @@
+// pull in required npms
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 const cTable = require('console.table');
 require('dotenv').config();
 
-console.log(process.env.DB_PASSWORD);
 
 // const Deptartment = require("./lib/Department");
 // const employee = require("./lib/employee");
@@ -218,7 +218,7 @@ function updateEmpRole() {
 
     let query = "SELECT employee.id, employee.first_name, employee.last_name, role.title, role.salary, department.name AS departmentName FROM employee LEFT JOIN role ON employee.role_id = role.id LEFT JOIN department ON role.department_id = department.id";
     let query2 = "SELECT role.id, role.title, role.salary FROM role";
-    let query3 = "UPDATE employee SET ? WHERE ?";
+    let query3 = "UPDATE employee SET role_id = ? WHERE employee.id = ?";
     let chosenEmpID;
     let chosenRoleID;
     let choiceArray = [];
@@ -278,18 +278,18 @@ function updateEmpRole() {
 
                             chosenRoleID = answer2;
 
+                            console.log(chosenRoleID);
+                            console.log(chosenEmpID);
+
                             connection.query(
                                 query3,
                                 [
-                                    {
-                                        role_id: chosenRoleID
-                                    },
-                                    {
-                                        id: chosenEmpID
-                                    }
+                                    chosenRoleID.newRoleID,
+                                    chosenEmpID.empID
+
                                 ],
                                 function (err, results3) {
-                                    if (error) throw err;
+                                    if (err) throw err;
                                     console.log("Employee role updted successfully!");
                                     start();
                                 }
