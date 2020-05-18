@@ -1,4 +1,4 @@
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '';
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'process.env.DB_PASSWORD';
 	
 DROP DATABASE IF EXISTS employee_db;
 CREATE DATABASE employee_db;
